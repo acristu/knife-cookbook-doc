@@ -7,18 +7,17 @@ module KnifeCookbookDoc
       @metadata = Chef::Cookbook::Metadata.new
       @metadata.from_file("#{cookbook_dir}/metadata.rb")
 
+      @attributes = []
       if !@metadata.attributes.empty?
         @attributes = @metadata.attributes.map do |attr, options|
           name = "node['#{attr.gsub("/", "']['")}']"
           [name, options['description'], options['default'], options['choice']]
         end
-      else
-        @attributes = []
+      end
         Dir["#{cookbook_dir}/attributes/*.rb"].sort.each do |attribute_filename|
           model = AttributesModel.new(attribute_filename)
           if !model.attributes.empty?
             @attributes += model.attributes
-          end
         end
       end
 
